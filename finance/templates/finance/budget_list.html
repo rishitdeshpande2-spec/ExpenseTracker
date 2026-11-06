@@ -1,0 +1,40 @@
+{% extends "finance/base.html" %}
+{% block title %}Budgets - Expense Tracker{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Monthly Budgets</h1>
+    <a href="{% url 'budget_create' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Set Budget</a>
+</div>
+<div class="row g-4">
+    {% for budget in budgets %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card p-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <span class="category-dot me-1" style="background: {{ budget.category.color }}"></span>
+                    <strong>{{ budget.category.name }}</strong>
+                </div>
+                <a href="{% url 'budget_delete' budget.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+            </div>
+            <div class="text-muted small mb-2">₹{{ budget.spent|floatformat:2 }} of ₹{{ budget.amount|floatformat:2 }}</div>
+            <div class="progress mb-2" style="height: 8px;">
+                <div class="progress-bar {% if budget.alert_status == 'exceeded' %}bg-danger{% elif budget.alert_status == 'warning' %}bg-warning{% else %}bg-success{% endif %}"
+                     style="width: {% if budget.usage_percent > 100 %}100{% else %}{{ budget.usage_percent }}{% endif %}%"></div>
+            </div>
+            <div class="d-flex justify-content-between small">
+                <span>{{ budget.usage_percent }}% used</span>
+                <span>₹{{ budget.remaining|floatformat:2 }} left</span>
+            </div>
+            {% if budget.alert_status != 'ok' %}
+            <div class="mt-2 small {% if budget.alert_status == 'exceeded' %}text-danger{% else %}text-warning{% endif %}">
+                <i class="bi bi-exclamation-triangle"></i>
+                {% if budget.alert_status == 'exceeded' %}Budget exceeded!{% else %}Approaching budget limit{% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center text-muted py-4">No budgets set for this period. <a href="{% url 'budget_create' %}">Create one</a></div>
+    {% endfor %}
+</div>
+{% endblock %}
