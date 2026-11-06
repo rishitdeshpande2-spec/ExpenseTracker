@@ -1,0 +1,39 @@
+{% extends "finance/base.html" %}
+{% block title %}Income - Expense Tracker{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Income</h1>
+    <a href="{% url 'income_create' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Income</a>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Date</th>
+                    <th>Source</th>
+                    <th>Description</th>
+                    <th class="text-end">Amount</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for income in incomes %}
+                <tr>
+                    <td>{{ income.date|date:"M d, Y" }}</td>
+                    <td>{{ income.source }}</td>
+                    <td>{{ income.description|default:"—" }}</td>
+                    <td class="text-end text-success">₹{{ income.amount|floatformat:2 }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'income_edit' income.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+                        <a href="{% url 'income_delete' income.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted py-4">No income recorded for this period</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
